@@ -11,13 +11,15 @@ request(
     },
     (error, response) => {
 
-        console.log(error)
-
-        currently = response.body.currently;
-        daily = response.body.daily;
-        console.log(daily.summary);
-        console.log(`Temperature: ${currently.temperature}`);
-        console.log(`Possibility of rain: ${currently.precipProbability}%`);
+        if (error) {
+            console.log('Unable connect to weather service!')
+        } else {
+            currently = response.body.currently;
+            daily = response.body.daily;
+            console.log(daily.summary);
+            console.log(`Temperature: ${currently.temperature}`);
+            console.log(`Possibility of rain: ${currently.precipProbability}%`);
+        }
     }
 )
 
