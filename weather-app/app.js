@@ -64,19 +64,23 @@ const getLatLong = (address, callback) => {
         (error, response) => {
 
             if (error) {
-                console.log('Unable to connect weather app!');
+                callback('Unable to connect weather app!', undefined);
             } else if (response.body.features.length === 0) {
-                console.log('Unable to locate address!');
+                callback('Unable to locate address!', undefined)
             } else {
-                longitude = response.body.features[0].center[0];
-                latitude = response.body.features[0].center[1];
-                callback([latitude, longitude]);
+                callback(
+                    undefined,
+                    {
+                        longitude: response.body.features[0].center[0],
+                        latitude: response.body.features[0].center[1],
+                        location: response.body.features[0].place_name
+                    }
+                )
             }
         }
     )
 }
 
 getLatLong('chicago', (error, latLongArray) => {
-    console.log(latLongArray[0]);
-    console.log(latLongArray[1]);
+    console.log(latLongArray)
 })
