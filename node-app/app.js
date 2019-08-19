@@ -1,11 +1,6 @@
 const yargs = require('yargs');
 const notes = require('./notes');
 
-// Goal: Refactor all functions
-// 1. If function is a method, use ES6 method function definition syntax
-// 2. Otherwise, use most concise arrow function possible
-// 3. Test your work!
-
 yargs.command({
     command: 'add',
     describe: 'Add a note.',
@@ -21,8 +16,8 @@ yargs.command({
             demandOption: true
         },
     },
-    handler: function (args) {
-        notes.writeNote(args.title, args.body);
+    handler(args) {
+        notes.addNote(args.title, args.body)
     }
 });
 
@@ -36,8 +31,29 @@ yargs.command({
             demandOption: true
         }
     },
+    handler(args) { notes.removeNote(args.title) }
+});
+
+yargs.command({
+    command: 'list',
+    describe: 'List of notes!',
+    handler: function () {
+        notes.listNotes();
+    }
+});
+
+yargs.command({
+    command: 'read',
+    describe: 'Read a note',
+    builder: {
+        title: {
+            describe: 'Reading a note!',
+            demandOption: true,
+            type: 'string'
+        }
+    },
     handler: function (args) {
-        notes.removeNote(args.title);
+        notes.readNote(args.title);
     }
 })
 
