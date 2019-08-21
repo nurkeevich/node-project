@@ -1,86 +1,30 @@
-const request = require('request');
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/forecast');
 
-const url = 'https://api.darksky.net/forecast/7f03d3658fc48ea57349cc4cb22c28a7/37.8267,-122.4233';
-const urlPoint = 'https://api.mapbox.com/geocoding/v5/mapbox.places/Chicago.json?access_token=pk.eyJ1IjoibnVya2VldmljaCIsImEiOiJjanppb2x4YngwMWd6M29vYWpyOTlpNjczIn0.ZY-TKmQ25vOIUcA4rKh0gA&limit=1';
+// Goal
 
-// weather api
-// request(
-//     {
-//         url: url,
-//         json: true
-//     },
-//     (error, response) => {
-//         if (error) {
-//             console.log('Unable connect to weather service!')
-//         } else if (response.body.error) {
-//             console.log('Unable to find location!')
-//         } else {
+// 1. Access the command line argument without yargs
+// 2. Use the string value as the input for geocode
+// 3. Only geocode if a location was provided
+// 4. Test your work with a couple locations
 
-//             currently = response.body.currently;
-//             daily = response.body.daily;
-//             console.log(daily.summary);
-//             console.log(`Temperature: ${currently.temperature}`);
-//             console.log(`Possibility of rain: ${currently.precipProbability}%`);
+const location = process.argv[2];
 
-//         }
-//     }
-// )
-
-// Goal: Handle errors for geocoding request
-
-// 1. Setup an error handler for low-level errors
-// 2. Test by disabling network request and running the app
-// 3. Setup error handling for no matching results
-// 4. Test by altering the search term and running the app.
-
-// Geocode api
-// request(
-//     {
-//         url: urlPoint,
-//         json: true
-//     },
-//     (error, response) => {
-//         if (error) {
-//             console.log('Unable to connect weather service!')
-//         } else if (response.body.features.length === 0) {
-//             console.log('Unable to locate location!')
-//         } else {
-//             longitude = response.body.features[0].center[0];
-//             latitude = response.body.features[0].center[1];
-//             console.log(longitude);
-//             console.log(latitude);
-//         }
-//     }
-// )
-
-const getLatLong = (address, callback) => {
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${address}.json?access_token=pk.eyJ1IjoibnVya2VldmljaCIsImEiOiJjanppb2x4YngwMWd6M29vYWpyOTlpNjczIn0.ZY-TKmQ25vOIUcA4rKh0gA&limit=1`;
-
-    request(
-        {
-            url: url,
-            json: true
-        },
-        (error, response) => {
-
-            if (error) {
-                callback('Unable to connect weather app!', undefined);
-            } else if (response.body.features.length === 0) {
-                callback('Unable to locate address!', undefined)
-            } else {
-                callback(
-                    undefined,
-                    {
-                        longitude: response.body.features[0].center[0],
-                        latitude: response.body.features[0].center[1],
-                        location: response.body.features[0].place_name
-                    }
-                )
-            }
+if (!location) {
+    console.log('Please provide location?');
+} else {
+    geocode(location, (error, data) => {
+        if (error) {
+            console.log(error);
+        } else {
+            forecast(data.latitude, data.longitude, (error, forecast) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(data.location);
+                    console.log(`Weather: ${forecast.summary}\nTemperature: ${forecast.temperature}\nRain probability: ${forecast.rainProbability}`);
+                }
+            })
         }
-    )
+    })
 }
-
-getLatLong('chicago', (error, latLongArray) => {
-    console.log(latLongArray)
-})
