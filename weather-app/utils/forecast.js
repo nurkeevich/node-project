@@ -5,16 +5,16 @@ const forecast = (latitude, longitude, callback) => {
 
     request(
         {
-            url: url,
+            url,
             json: true
         },
-        (error, response) => {
+        (error, { body }) => {
             if (error) {
                 callback(
                     'Unable to get temperature at this moment!',
                     undefined
                 );
-            } else if (response.body.code === 400) {
+            } else if (body.code === 400) {
                 callback(
                     'Temperature temporarily unable!',
                     undefined
@@ -23,9 +23,9 @@ const forecast = (latitude, longitude, callback) => {
                 callback(
                     undefined,
                     {
-                        summary: response.body.currently.summary,
-                        rainProbability: response.body.currently.precipProbability,
-                        temperature: response.body.currently.temperature
+                        summary: body.currently.summary,
+                        rainProbability: body.currently.precipProbability,
+                        temperature: body.currently.temperature
                     }
                 )
             }
